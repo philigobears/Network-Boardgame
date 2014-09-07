@@ -1,0 +1,299 @@
+                                     GRADER
+
+Name of student running submit: Lu Wang
+Login of student running submit: cs61b-wh
+
+Second team member's name: Yuelin Zheng
+Second team member's login: cs61b-fy
+
+Third team member's name (if any): N/A
+Third team member's login: N/A
+
+IMPORTANT:  Once you've submitted Project 2 once, the same team member should
+submit always.  If a different teammate must submit, inform cs61b@cory.eecs of
+all the details.  Include a complete list of team members, and let us know
+which submission you want graded.
+
+If you've submitted your project once, or even written a substantial amount of
+code together, you may not change partners without the permission of the
+instructor.
+===============================================================================
+Does your program compile without errors?
+Yes.
+
+Have you tested your program on the 61B lab machines?
+Yes.
+
+Did you successfully implement game tree search?  Did you successfully
+implement alpha-beta pruning?  Are there any limitations on it?  What is the
+default number of search levels set by the one-parameter MachinePlayer
+constructor (or is it a variable-depth search)?
+
+Yes, I successfully implement game tree search and alpha-beta pruning. There are 
+limitations on it because the time of searching for a good move is constrained. 
+The default number of search level of adding chip is 3, and search level of 
+steping chip is 2.
+
+Describe your board evaluation function in some detail.
+
+The evaluation function gives the score calculated by the number of connection 
+of my machine player subtracting the opponent's total connections. Notice that we 
+count two connetions between each pair instead of one. And an empty board should
+return a score of zero.
+
+
+Does your MachinePlayer use any special method of choosing the first few moves?
+In the first two move, we will choose to put the chip nearly in the middle area of the board. 
+
+
+Is there anything else the graders should know to help them read your project?
+In our implementations, player 1 is WHITE and player 2 is BLACK. A 0 means an 
+empty spot on the board and 3 means the four corner spots.
+
+By the way, this is a great project which pushed me and my partner to learned a lot. 
+Thank you professor and my graders!
+
+
+Describe the classes, modules, and interfaces you designed before and while you
+implemented the project.  Your description should include:
+  -  A list of the classes your program uses.
+  -  A list of each of the "modules" used in or by MachinePlayer, similar to
+     the list in the "Teamwork" section of the README (but hopefully more
+     detailed).  (If you're using a list class, that should probably count as
+     a separate module.)
+  -  For each module, list the class(es) the module is implemented in.
+  -  For each module, say which of your team members implemented it.
+  -  For each module, describe its interface--specifically, the prototype and
+     behavior of each method that is available for external callers (outside
+     the module) to call.  Don't include methods that are only meant to be
+     called from within the module.
+
+     For each method, provide (1) a method prototype and (2) a complete,
+     unambiguous description of the behavior of the method/module.  This
+     description should also appear before the method in your code's comments.
+
+You will probably need to change some of your design decisions as you go; be
+sure to modify this file to reflect these changes before you submit your
+project.  Your design of classes and interfaces will be worth 10% of your
+grade.
+
+
+--The list of the classes your program uses is: 
+
+Player class, which is a class that is extended by all Network players (human and machine); 
+MachinePlayer, which extends Player; 
+Move class, which can construct a valid move;
+DList class, which can create a list of valid moves;
+DListNode class, which makes up the list;
+Best class, which can construct a Best object that contains a good move and its performing score;
+Board class, which contains most of the methods in this project.
+
+
+--The list of classes each module is implemented in:
+
+Basic Operations in Board: Board. (Implemented by Yuelin Zheng(cs61b-fy).)
+List: DList, DListNode. (Implemented by Yuelin Zheng(cs61b-fy).)
+Operations in MachinePlayer: MachinePlayer. (Implemented by Lu Wang(cs61b-wh).)
+Network identifier: Board. (Implemented by Yuelin Zheng(cs61b-fy).)
+Evaluation function: Board. (Implemented by Lu Wang(cs61b-wh).)
+
+
+--The list of each of the "modules" and their interface descriptions:
+
+1. Basic Operations in Board:
+
+(1) Valid Move identifier: determining whether a move is valid. 
+
+  /**
+   *  isValidMove method determines whether a move on the board is valid for player 1 or 2.  
+   *
+   *  @param move the move that is checking by the indicated player.
+   *  @param player an integer representing the current side of player.
+   *  @return true if the move is valid;
+   *          false otherwise.
+   **/
+   public boolean isValidMove(Move move, int player);
+
+
+(2) All valid moves generator: generating a list of all valid moves. 
+
+  /**
+   *  allValidMoves method generates a list of all the legal moves for player 1 or 2.  
+   *
+   *  @param player an integer representing the current side of player which is 
+   *        checking all legal moves right now
+   *  @return List a list of moves which are legal for player 1 or 2
+   **/
+protected List allValidMoves(int player);
+
+
+(3) Move performer: performing a move by an indicated player and updating the board.
+
+/**
+     *  setMove method performs a move by an indicated player. It does not check if this move is valid or not.
+     *  It will update the internal board (perform the move m and update the round value).
+     *
+     *  @param m a move that will be performed.
+     *  @param player the player that perform this move m. 
+     *  
+     **/
+  protected void setMove(Move m, int player);
+
+
+(4) Move eraser: erasing a move by an indicated player and updating the board.
+
+/**
+     *  unsetMove method will erase a move by an indicated player. It does not check if this move is valid or not.
+     *  It will update the internal board (erase the move m and update the round value).
+     *
+     *  @param m a move that will be performed.
+     *  @param player the player that perform this move m. 
+     *  
+     **/
+  protected void unsetMove(Move m, int player);
+
+2. List: 
+
+(1) DList constructor: constructing an empty DList.
+
+  /**
+   *  DList() constructs an empty DList.
+   */
+     public DList();
+
+
+(2) Insert a DListNode at back: inserting an item at the back of this DList.
+
+  /**
+   *  insertBack() inserts an item at the back of this DList.
+   *  @param item is the item to be inserted.
+   *  Performance:  runs in O(1) time.
+   */
+     public void insertBack(Object item);
+
+
+(3) Front node finder: finding the node at the front of this DList
+
+  /**
+   *  front() returns the node at the front of this DList.  If the DList is
+   *  empty, return null.
+   *
+   *  @return the node at the front of this DList.
+   *  Performance:  runs in O(1) time.
+   */
+  public DListNode front();
+
+
+(4) Next node finder: finding the following node.
+  /**
+   *  next() returns the node following "node" in this DList.  If "node" is
+   *  null, or "node" is the last node in this DList, return null.
+   *
+   *  @param node the node whose successor is sought.
+   *  @return the node following "node".
+   *  Performance:  runs in O(1) time.
+   */
+  public DListNode next(DListNode node);
+
+
+(5) Node inserter: inserting a item at the back and return true.
+
+  /**
+   * insert() will insert item at the back of the list and return true, otherwise, if 
+   * the position represented by item is already in this DList, return false and do nothing
+   * @param item the item that will be inserted
+   * @return true if the item is not already in this DList; false if it is
+   */
+  public boolean insert(Object item);
+
+
+(6) DList copier: making a copy of "this" DList.
+  /**
+   * copy() returns a new copy of this DList
+   * @return a new copy of this DList
+   */
+  public DList copy();
+
+
+3. Operations in MachinePlayer: constructing a machine player, and forcing moves of both players, 
+  and most importantly, choosing moves by performing game tree search and implementing 
+  alpha-beta pruning, achieved by two minor functions (getMin and getMax) calling each 
+  others recursively.
+
+(1) Move searcher: giving a good new move by my machine player
+
+/**
+   *  chooseMove method returns a new good move by my machine player after searching and evaluating all 
+   *  the possible moves by my machine player. It also internally records the move (updates
+   *  the internal game board) as a move by "this" player.
+   *
+   *  @return a new good move by my machine player
+   **/
+  public Move chooseMove();
+
+
+(2) Opponent move informer: informing me of the move by my opponent.
+
+/**
+   *  opponentMove method informs me of the move by my opponent.
+   *  It returns true if the Move m is legal, and records the move by opponent and updates 
+   *  the internal board of my opponent.
+   *  It returns false if the move is illegal,  without modifying the internal state of my opponent.
+   *
+   *  @param m the move the opponent made
+   *  @return true if the Move is legal, false otherwise
+   **/
+  public boolean opponentMove(Move m);
+
+
+(3) My move forcer: recording my own legal move.
+
+/**
+   *  forceMove method records my own legal move.
+   *  It returns true if my move is legal, and records the move and updates the internal board of my machine player.
+   *  It returns false if the move is illegal, without modifying the internal state of my machine player.
+   *
+   *  @param m the move my machine player made
+   *  @return true if the Move is legal, false otherwise
+   **/
+  public boolean forceMove(Move m);
+
+
+4.Network identifier: determining whether a game board contains any networks for a given player. 
+
+/**
+   *  hasNetwork method determines whether "this" GameBoard has a valid network
+   *  for player 1 or 2.  
+   *
+   *  Unusual conditions:
+   *    If the player is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT,
+   *          returns false.
+   *    If GameBoard squares contain illegal values, the behavior of this
+   *          method is undefined (i.e., don't expect any reasonable behavior).
+   *
+   *  @param player the player whose board evaluated for, either WHITE or BLACK.
+   *  @return true if this player has a winning network in "this" GameBoard;
+   *          false otherwise.
+   **/
+  protected boolean hasNetwork(int player);
+
+
+5. Evaluation function: computing an evaluation function for a board (by calling a helper function that counts 
+  the connections of both my machine player and the opponent). 
+
+/**
+   *  evaluate method assigns a score to "this" board after playing a move. It can estimate how well my 
+   *  machine player can do, so that I can choose the best move in this turn.
+   *
+   *  Unusual conditions:
+   *    If the current board is an empty board, then the return score should be zero.
+   *    If your MachinePlayer has a valid network, then the return score should be the maximum 
+   *           value in 32bit integer. (By declaring public static final int MAX_VALUE)
+   *
+   *  @param move a move that will be evaluated
+   *  @param player the player whose board is evaluating for, either WHITE or BLACK.
+   *  @return an integer which is the score of "this" board after performing the move.
+   **/
+   protected int evaluate(Move move, int player);
+
+
